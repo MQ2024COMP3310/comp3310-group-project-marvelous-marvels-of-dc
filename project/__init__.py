@@ -1,10 +1,13 @@
 from flask import Flask
+from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 import os
 from pathlib import Path
 
 # init SQLAlchemy so we can use it later in our models
 db = SQLAlchemy()
+login_manager = LoginManager() 
+
 
 def create_app():
     app = Flask(__name__)
@@ -15,6 +18,8 @@ def create_app():
     app.config['UPLOAD_DIR'] = CWD / "uploads"
 
     db.init_app(app)
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.login' 
 
     # blueprint for non-auth parts of app
     from .main import main as main_blueprint
