@@ -5,7 +5,7 @@ def populate_db():
    
     session = db.session()
 
-    photo = Photo(name = 'William Warby', caption = 'Gentoo penguin', description = 'A penguin with an orange beak standing next to a rock.', file = 'william-warby-_A_vtMMRLWM.jpg') 
+    """ photo = Photo(name = 'William Warby', caption = 'Gentoo penguin', description = 'A penguin with an orange beak standing next to a rock.', file = 'william-warby-_A_vtMMRLWM.jpg') 
     session.add(photo)
     session.commit()
 
@@ -47,12 +47,11 @@ def populate_db():
 
     photo = Photo(name = 'Edgar', caption = 'Oporto, Portugal', description = 'A man sitting on a bench at a train station.', file = 'edgar-Q0g5Thf7Ank.jpg') 
     session.add(photo)
-    session.commit()
+    session.commit() """
 
 if __name__ == '__main__':
   app = create_app()
   with app.app_context():
     db.drop_all()
     db.create_all()
-    populate_db()
 
