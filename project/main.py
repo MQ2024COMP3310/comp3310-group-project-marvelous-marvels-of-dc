@@ -3,7 +3,7 @@ from flask import (
   flash, redirect, url_for, send_from_directory, 
   current_app, make_response
 )
-from flask_login import current_user
+from flask_login import current_user, login_required
 from .models import Photo
 from sqlalchemy import asc, text
 from . import db
@@ -13,6 +13,7 @@ main = Blueprint('main', __name__)
 
 # This is called when the home page is rendered. It fetches all images sorted by filename.
 @main.route('/')
+@login_required
 def homepage():
   photos = db.session.query(Photo).order_by(asc(Photo.file))
   return render_template('index.html', photos = photos)
@@ -23,6 +24,7 @@ def display_file(name):
 
 # Upload a new photo
 @main.route('/upload/', methods=['GET','POST'])
+@login_required
 def newPhoto():
   if request.method == 'POST':
     file = None
@@ -52,6 +54,7 @@ def newPhoto():
 
 # This is called when clicking on Edit. Goes to the edit page.
 @main.route('/photo/<int:photo_id>/edit/', methods = ['GET', 'POST'])
+@login_required
 def editPhoto(photo_id):
   editedPhoto = db.session.query(Photo).filter_by(id = photo_id).one()
   if request.method == 'POST':
@@ -69,6 +72,7 @@ def editPhoto(photo_id):
 
 # This is called when clicking on Delete. 
 @main.route('/photo/<int:photo_id>/delete/', methods = ['GET','POST'])
+@login_required
 def deletePhoto(photo_id):
   photo = Photo.query.get_or_404(photo_id)
   if photo.user_id == current_user.id or current_user.is_admin:
