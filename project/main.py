@@ -3,6 +3,7 @@ from flask import (
   flash, redirect, url_for, send_from_directory, 
   current_app, make_response
 )
+from flask_login import current_user
 from .models import Photo
 from sqlalchemy import asc, text
 from . import db
@@ -40,7 +41,8 @@ def newPhoto():
     newPhoto = Photo(name = request.form['user'], 
                     caption = request.form['caption'],
                     description = request.form['description'],
-                    file = file.filename)
+                    file = file.filename,
+                    user_id=current_user.id) # Associate photo with current user
     db.session.add(newPhoto)
     flash('New Photo %s Successfully Created' % newPhoto.name)
     db.session.commit()
@@ -68,13 +70,16 @@ def editPhoto(photo_id):
 # This is called when clicking on Delete. 
 @main.route('/photo/<int:photo_id>/delete/', methods = ['GET','POST'])
 def deletePhoto(photo_id):
-  fileResults = db.session.execute(text('select file from photo where id = ' + str(photo_id)))
-  filename = fileResults.first()[0]
-  filepath = os.path.join(current_app.config["UPLOAD_DIR"], filename)
-  os.unlink(filepath)
-  db.session.execute(text('delete from photo where id = ' + str(photo_id)))
-  db.session.commit()
+  photo = Photo.query.get_or_404(photo_id)
+  if photo.user_id == current_user.id or current_user.is_admin:
+    filepath = os.path.join(current_app.config["UPLOAD_DIR"], photo)
+    os.unlink(filepath)
+    db.session.execute(text('delete from photo where id = ' + str(photo_id)))
+    db.session.commit()
   
-  flash('Photo id %s Successfully Deleted' % photo_id)
-  return redirect(url_for('main.homepage'))
+    flash('Photo id %s Successfully Deleted' % photo_id)
+    return redirect(url_for('main.homepage'))
+  else:
+    flash('You do not have permission to delete this photo', 'error')
+    return redirect(url_for('main.homepage'))
 
