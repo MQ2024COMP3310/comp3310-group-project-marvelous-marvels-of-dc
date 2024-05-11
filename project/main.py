@@ -56,7 +56,12 @@ def newPhoto():
 @main.route('/photo/<int:photo_id>/edit/', methods = ['GET', 'POST'])
 @login_required
 def editPhoto(photo_id):
+
   editedPhoto = db.session.query(Photo).filter_by(id = photo_id).one()
+  if editedPhoto.user_id != current_user.id and not current_user.is_admin:
+    flash('You do not have permission to edit this photo', 'error')
+    return redirect(url_for('main.homepage'))
+  
   if request.method == 'POST':
     if request.form['user']:
       editedPhoto.name = request.form['user']
@@ -76,7 +81,7 @@ def editPhoto(photo_id):
 def deletePhoto(photo_id):
   photo = Photo.query.get_or_404(photo_id)
   if photo.user_id == current_user.id or current_user.is_admin:
-    filepath = os.path.join(current_app.config["UPLOAD_DIR"], photo)
+    filepath = os.path.join(current_app.config["UPLOAD_DIR"], photo.file)
     os.unlink(filepath)
     db.session.execute(text('delete from photo where id = ' + str(photo_id)))
     db.session.commit()
