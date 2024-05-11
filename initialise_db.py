@@ -1,14 +1,15 @@
 from project import db, create_app, models
 from project.models import Photo, User
+from werkzeug.security import generate_password_hash
 
 def populate_db():
     
     session = db.session()
 
     # Create Users
-    user1 = User(username='user1', password='password1', is_admin=False)
-    user2 = User(username='user2', password='password2', is_admin=False)
-    user3 = User(username='user3', password='password3', is_admin=False)
+    user1 = User(username='user1', password=generate_password_hash('password1'), is_admin=True)
+    user2 = User(username='user2', password=generate_password_hash('password2'), is_admin=False)
+    user3 = User(username='user3', password=generate_password_hash('password3'), is_admin=False)
     
     # Adding Users to the Session
     session.add(user1)

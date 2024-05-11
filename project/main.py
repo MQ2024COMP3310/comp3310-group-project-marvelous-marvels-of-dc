@@ -22,73 +22,83 @@ def homepage():
 def display_file(name):
   return send_from_directory(current_app.config["UPLOAD_DIR"], name)
 
-# Upload a new photo
+from werkzeug.utils import secure_filename
+import imghdr
+
 @main.route('/upload/', methods=['GET','POST'])
 @login_required
 def newPhoto():
-  if request.method == 'POST':
-    file = None
-    if "fileToUpload" in request.files:
-      file = request.files.get("fileToUpload")
+    if request.method == 'POST':
+        file = request.files.get("fileToUpload")
+        
+        if not file:
+            flash("No file selected!", "error")
+            return redirect(request.url)
+
+        # Secure filename path
+        filename = secure_filename(file.filename)
+
+        # File size check 12MB
+        file.seek(0, os.SEEK_END)
+        file_length = file.tell()
+        if file_length > 12 * 1024 * 1024:
+            flash("File too large!", "error")
+            return redirect(request.url)
+        file.seek(0)
+
+        # Check file type
+        file_type = imghdr.what(file)
+        if file_type not in ['jpeg', 'png', 'gif']:
+            flash("Invalid image format!", "error")
+            return redirect(request.url)
+
+        file.save(os.path.join(current_app.config["UPLOAD_DIR"], filename))
+
+        new_photo = Photo(name=request.form['user'], 
+                          caption=request.form['caption'],
+                          description=request.form['description'],
+                          file=filename,
+                          user_id=current_user.id)
+        
+        db.session.add(new_photo)
+        flash(f'New Photo {new_photo.name} Successfully Created')
+        db.session.commit()
+        return redirect(url_for('main.homepage'))
     else:
-      flash("Invalid request!", "error")
-
-    if not file or not file.filename:
-      flash("No file selected!", "error")
-      return redirect(request.url)
-
-    filepath = os.path.join(current_app.config["UPLOAD_DIR"], file.filename)
-    file.save(filepath)
-
-    newPhoto = Photo(name = request.form['user'], 
-                    caption = request.form['caption'],
-                    description = request.form['description'],
-                    file = file.filename,
-                    user_id=current_user.id) # Associate photo with current user
-    db.session.add(newPhoto)
-    flash('New Photo %s Successfully Created' % newPhoto.name)
-    db.session.commit()
-    return redirect(url_for('main.homepage'))
-  else:
-    return render_template('upload.html')
+        return render_template('upload.html')
 
 # This is called when clicking on Edit. Goes to the edit page.
-@main.route('/photo/<int:photo_id>/edit/', methods = ['GET', 'POST'])
+@main.route('/photo/<int:photo_id>/edit/', methods=['GET', 'POST'])
 @login_required
 def editPhoto(photo_id):
+    editedPhoto = db.session.query(Photo).filter_by(id=photo_id).one()
+    if request.method == 'POST':
+        if 'user' in request.form and 'caption' in request.form and 'description' in request.form:
+            editedPhoto.name = request.form['user']
+            editedPhoto.caption = request.form['caption']
+            editedPhoto.description = request.form['description']
+            db.session.commit()
+            flash(f'Photo Successfully Edited {editedPhoto.name}')
+            return redirect(url_for('main.homepage'))
+        else:
+            flash('Missing form fields.', 'error')
+            return redirect(url_for('main.editPhoto', photo_id=photo_id))
 
-  editedPhoto = db.session.query(Photo).filter_by(id = photo_id).one()
-  if editedPhoto.user_id != current_user.id and not current_user.is_admin:
-    flash('You do not have permission to edit this photo', 'error')
-    return redirect(url_for('main.homepage'))
-  
-  if request.method == 'POST':
-    if request.form['user']:
-      editedPhoto.name = request.form['user']
-      editedPhoto.caption = request.form['caption']
-      editedPhoto.description = request.form['description']
-      db.session.add(editedPhoto)
-      db.session.commit()
-      flash('Photo Successfully Edited %s' % editedPhoto.name)
-      return redirect(url_for('main.homepage'))
-  else:
-    return render_template('edit.html', photo = editedPhoto)
+    return render_template('edit.html', photo=editedPhoto)
 
 
 # This is called when clicking on Delete. 
-@main.route('/photo/<int:photo_id>/delete/', methods = ['GET','POST'])
+@main.route('/photo/<int:photo_id>/delete/', methods=['GET','POST'])
 @login_required
 def deletePhoto(photo_id):
-  photo = Photo.query.get_or_404(photo_id)
-  if photo.user_id == current_user.id or current_user.is_admin:
-    filepath = os.path.join(current_app.config["UPLOAD_DIR"], photo.file)
-    os.unlink(filepath)
-    db.session.execute(text('delete from photo where id = ' + str(photo_id)))
-    db.session.commit()
-  
-    flash('Photo id %s Successfully Deleted' % photo_id)
-    return redirect(url_for('main.homepage'))
-  else:
-    flash('You do not have permission to delete this photo', 'error')
-    return redirect(url_for('main.homepage'))
+    photo = Photo.query.get_or_404(photo_id)
+
+    if photo.user_id == current_user.id or current_user.is_admin:
+        db.session.delete(photo)
+        db.session.commit()
+        flash('Photo Successfully Deleted')
+        return redirect(url_for('main.homepage'))
+    else:
+        flash('You do not have permission to delete this photo', 'error')
+        return redirect(url_for('main.homepage'))
 
