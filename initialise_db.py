@@ -1,15 +1,19 @@
+import os
 from project import db, create_app, models
 from project.models import Photo, User
 from werkzeug.security import generate_password_hash
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def populate_db():
     
     session = db.session()
 
     # Create Users
-    user1 = User(username='user1', password=generate_password_hash('password1'), is_admin=True)
-    user2 = User(username='user2', password=generate_password_hash('password2'), is_admin=False)
-    user3 = User(username='user3', password=generate_password_hash('password3'), is_admin=False)
+    user1 = User(username='user1', password=generate_password_hash('password1', method='pbkdf2:sha256', salt_length=int(os.getenv('SALTING_ROUNDS'))), is_admin=True)
+    user2 = User(username='user2', password=generate_password_hash('password2', method='pbkdf2:sha256', salt_length=int(os.getenv('SALTING_ROUNDS'))), is_admin=False)
+    user3 = User(username='user3', password=generate_password_hash('password3', method='pbkdf2:sha256', salt_length=int(os.getenv('SALTING_ROUNDS'))), is_admin=False)
     
     # Adding Users to the Session
     session.add(user1)
