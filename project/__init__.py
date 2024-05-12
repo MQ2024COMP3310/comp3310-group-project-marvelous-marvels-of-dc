@@ -3,18 +3,19 @@ from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # init SQLAlchemy so we can use it later in our models
 db = SQLAlchemy()
 login_manager = LoginManager() 
-
+load_dotenv()
 
 
 def create_app():
     app = Flask(__name__)
 
-    app.config['SECRET_KEY'] = 'secret-key-do-not-reveal'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///photos.db'
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
     CWD = Path(os.path.dirname(__file__))
     app.config['UPLOAD_DIR'] = CWD / "uploads"
 
