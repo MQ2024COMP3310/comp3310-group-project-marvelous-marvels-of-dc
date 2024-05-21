@@ -32,7 +32,7 @@ class User(UserMixin, db.Model):
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.now(datetime.UTC))
+    created_at = db.Column(db.DateTime, default=datetime.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     photo_id = db.Column(db.Integer, db.ForeignKey('photo.id'), nullable=False)
 
