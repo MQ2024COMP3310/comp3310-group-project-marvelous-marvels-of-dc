@@ -58,6 +58,12 @@
                       <img src="{{ url_for('static', filename='icons/delete.png') }}" title="Delete this photo" alt="delete">
                   </div>
               </a>
+
+              <a href="{{ url_for('main.view_photo', photo_id=photo.id) }}" title="View this photo">
+                <div class="icon-container highlight red delete">
+                    <img src="{{ url_for('static', filename='icons/comment.png') }}" title="View this photo" alt="view">
+                </div>
+            </a>
             </div>
             {% endif %}
         </div>
