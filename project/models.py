@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask_login import UserMixin
 from . import db
 
@@ -27,3 +28,13 @@ class User(UserMixin, db.Model):
     is_admin = db.Column(db.Boolean, default=False) 
     photos = db.relationship('Photo', backref='user', lazy=True)
 
+
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now(datetime.UTC))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    photo_id = db.Column(db.Integer, db.ForeignKey('photo.id'), nullable=False)
+
+    user = db.relationship('User', backref='comments')
+    photo = db.relationship('Photo', backref='comments')
