@@ -32,9 +32,11 @@ def newPhoto():
 
     if not file or not file.filename:
       flash("No file selected!", "error")
-      return redirect(request.url)
+      return redirect(url_for('main.newPhoto'))  #Redirect to newPhotos route
 
-    filepath = os.path.join(current_app.config["UPLOAD_DIR"], file.filename)
+    file_extension = os.path.splitext(file.filename)[1] 
+    secure_filename = secrets.token_hex(16) + file_extension 
+    filepath = os.path.join(current_app.config["UPLOAD_DIR"], secure_filename) 
     file.save(filepath)
 
     newPhoto = Photo(name = request.form['user'], 
@@ -68,11 +70,11 @@ def editPhoto(photo_id):
 # This is called when clicking on Delete. 
 @main.route('/photo/<int:photo_id>/delete/', methods = ['GET','POST'])
 def deletePhoto(photo_id):
-  fileResults = db.session.execute(text('select file from photo where id = ' + str(photo_id)))
+  fileResults = db.session.query(Photo.file).filter_by(id=photo_id).first() 
   filename = fileResults.first()[0]
   filepath = os.path.join(current_app.config["UPLOAD_DIR"], filename)
   os.unlink(filepath)
-  db.session.execute(text('delete from photo where id = ' + str(photo_id)))
+  db.session.query(Photo).filter_by(id=photo_id).delete()
   db.session.commit()
   
   flash('Photo id %s Successfully Deleted' % photo_id)
