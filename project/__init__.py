@@ -4,15 +4,19 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from flask_wtf.csrf import CSRFProtect
 
 # init SQLAlchemy so we can use it later in our models
 db = SQLAlchemy()
 login_manager = LoginManager() 
 load_dotenv()
 
+# init CSRF protection library
+csrf = CSRFProtect() 
 
 def create_app():
     app = Flask(__name__)
+    csrf.init_app(app) # add csrf protection to the app
 
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
