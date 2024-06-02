@@ -17,6 +17,12 @@
         <div class="details-box">
             <p><strong>Uploaded by:</strong> {{ photo.user.username }}</p> 
             <p><strong>Description:</strong> {{ photo.description }}</p>
+            
+            <p><strong>Categories:</strong>
+                {% for category in photo.categories %}
+                    <a href="{{ url_for('main.view_category', category_id=category.id) }}">{{ category.name }}</a>{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </p>
 
             <h2>Comments</h2>
             <ul class="comment-list">

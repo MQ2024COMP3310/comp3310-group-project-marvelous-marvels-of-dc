@@ -1,0 +1,21 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}
+Browse by Category
+{% endblock title %}
+
+{% block heading %}
+Browse by Category
+{% endblock heading %}
+
+{% block content %}
+<div class="category-container">
+    <a href="{{ url_for('main.add_category') }}" class="btn btn-primary">Add New Category</a>
+    <div class="spacing"></div>
+    {% for category in categories %}
+    <div class="category-box">
+        <a href="{{ url_for('main.view_category', category_id=category.id) }}">{{ category.name }}</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock content %}

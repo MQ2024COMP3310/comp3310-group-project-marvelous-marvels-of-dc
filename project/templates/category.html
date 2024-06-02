@@ -1,0 +1,34 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}
+Photos in {{ category.name }}
+{% endblock title %}
+
+{% block heading %}
+Photos in {{ category.name }}
+{% endblock heading %}
+
+{% block content %}
+<div id="images" class="images-container">
+    {% for photo in photos %}
+    <div class="image-box">
+        <img class="image" src="{{ url_for('main.display_file', name=photo.file) }}" alt="image">
+        <div class="image-overlay-container">
+            <div class="image-info-container">
+                <div class="image-meta">
+                    <div class="image-owner overflow-ellipsis" title="{{photo.name}}">
+                        {{photo.name}}
+                    </div>
+                    <div class="image-caption overflow-ellipsis" title="{{photo.caption}}">
+                        {{photo.caption}}
+                    </div>
+                </div>
+                <div class="image-description overflow-ellipsis" title="{{photo.description}}">
+                    {{photo.description}}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock content %}

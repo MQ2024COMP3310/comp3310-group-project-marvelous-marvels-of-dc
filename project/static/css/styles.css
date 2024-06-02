@@ -1571,3 +1571,7 @@ body {
   align-items: center;
   gap: 10px;
 }
+
+.spacing {
+  height: 24px;
+}
