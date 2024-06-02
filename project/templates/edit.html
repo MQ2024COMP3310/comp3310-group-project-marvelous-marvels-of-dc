@@ -9,43 +9,30 @@ Edit a photo
 {% endblock heading %}
 
 {% block content %}
-<form method="POST" enctype="multipart/form-data" action="{{ url_for('main.editPhoto', photo_id=photo.id) }}">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-
-  <div class="edit-container">
-    <div class="image-box">
-       <img class="image" src="{{ url_for('main.display_file', name=photo.file) }}" alt="image">
+<form method="POST" action="{{ url_for('main.editPhoto', photo_id=photo.id) }}">
+    {{ form.hidden_tag() }}
+    <div class="edit-container">
+        <div class="image-box">
+            <img class="image" src="{{ url_for('main.display_file', name=photo.file) }}" alt="image">
+        </div>
+        <div class="input-box">
+            <div class="input-container">
+                {{ form.user.label }}
+                {{ form.user(class_='input-field') }}
+            </div>
+            <div class="input-container">
+                {{ form.caption.label }}
+                {{ form.caption(class_='input-field') }}
+            </div>
+            <div class="input-container">
+                {{ form.description.label }}
+                {{ form.description(class_='input-field') }}
+            </div>
+            <div class="input-container button green">
+                {{ form.submit(class_='btn btn-primary') }}
+                <a href="{{ url_for('main.homepage') }}" class="btn">Cancel</a>
+            </div>
+        </div>
     </div>
-    <div class="input-box">
-    <div class="input-container">
-        <label for="user">User</label>
-        <input id="user" type="text" name="user"
-            value="{{photo.name}}"
-            title="Specify your user name"
-            required
-        >
-    </div>
-    <div class="input-container">
-        <label for="caption">Caption</label>
-        <input id="caption" type="text" name="caption"
-            value="{{photo.caption}}"
-            title="Provide a nice and short caption to your photo"
-            required
-        >
-    </div>
-    <div class="input-container">
-        <label for="description">Description</label>
-        <textarea id="description" name="description" rows=6 cols=25 
-            title="Provide a nice and short description to your photo"
-            required>{{photo.description}}</textarea>
-    </div>
-
-    <div class="input-container button green">
-        <input type="submit" value="Save">
-        <a href="{{ url_for('main.homepage') }}">Cancel</a>
-    </div>
-  </div>
-  </div>
 </form>
 {% endblock content %}
-

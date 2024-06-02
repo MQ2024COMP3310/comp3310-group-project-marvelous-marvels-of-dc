@@ -5,16 +5,15 @@
     <h3 class="title">Login</h3>
     <div class="box">
         <form method="POST" action="{{ url_for('auth.login') }}">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            {{ form.hidden_tag() }}
             <div class="field">
                 <div class="control">
-                    <input class="input is-large" type="username" name="username" placeholder="Your Username" autofocus="">
+                    {{ form.username(class_='input is-large', placeholder='Your Username') }}
                 </div>
             </div>
-
             <div class="field">
                 <div class="control">
-                    <input class="input is-large" type="password" name="password" placeholder="Your Password">
+                    {{ form.password(class_='input is-large', placeholder='Your Password') }}
                 </div>
             </div>
             <div class="field">
@@ -23,7 +22,7 @@
                     Remember me
                 </label>
             </div>
-            <button class="button is-block is-info is-large is-fullwidth">Login</button>
+            {{ form.submit(class_='button is-block is-info is-large is-fullwidth') }}
         </form>
     </div>
 </div>

@@ -5,20 +5,23 @@
     <h3 class="title">Register</h3>
     <div class="box">
         <form method="POST" action="{{ url_for('auth.register') }}">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            {{ form.hidden_tag() }}
             <div class="field">
                 <div class="control">
-                    <input class="input is-large" type="username" name="username" placeholder="Username" autofocus="">
+                    {{ form.username(class_='input is-large', placeholder='Username') }}
                 </div>
             </div>
-
             <div class="field">
                 <div class="control">
-                    <input class="input is-large" type="password" name="password" placeholder="Password">
+                    {{ form.password(class_='input is-large', placeholder='Password') }}
                 </div>
             </div>
-
-            <button class="button is-block is-info is-large is-fullwidth">Register</button>
+            <div class="field">
+                <div class="control">
+                    {{ form.confirm(class_='input is-large', placeholder='Repeat Password') }}
+                </div>
+            </div>
+            {{ form.submit(class_='button is-block is-info is-large is-fullwidth') }}
         </form>
     </div>
 </div>
