@@ -1,11 +1,11 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, send_from_directory, current_app
 from flask_login import current_user, login_required
-from sqlalchemy import asc
+from sqlalchemy import asc, text
 from werkzeug.utils import secure_filename
 import imghdr
 import os
-from .models import Photo
 from .forms import UploadForm, EditForm
+from .models import Photo, Comment
 from . import db
 
 main = Blueprint('main', __name__)
@@ -88,3 +88,22 @@ def deletePhoto(photo_id):
     db.session.commit()
     flash('Photo Successfully Deleted', 'success')
     return redirect(url_for('main.homepage'))
+
+# This is called when clicking on Comment. Goes to the comment page.
+@main.route('/photo/<int:photo_id>/comment', methods=['POST'])
+@login_required
+def create_comment(photo_id):
+    content = request.form.get('content')
+    if not content:
+        flash('Comment cannot be empty', 'error')
+    else:
+        new_comment = Comment(content=content, user_id=current_user.id, photo_id=photo_id)
+        db.session.add(new_comment)
+        db.session.commit()
+        flash('Comment posted successfully!', 'success')
+    return redirect(url_for('main.view_photo', photo_id=photo_id))
+
+@main.route('/photo/<int:photo_id>')
+def view_photo(photo_id):
+    photo = Photo.query.get_or_404(photo_id)
+    return render_template('photo.html', photo=photo)

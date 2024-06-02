@@ -1,0 +1,45 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}
+{{ photo.caption }}
+{% endblock title %}
+
+{% block heading %}
+{{ photo.caption }}
+{% endblock heading %}
+
+{% block content %}
+<div class="photo-container">
+    <div class="image-box">
+        <img class="image" src="{{ url_for('main.display_file', name=photo.file) }}" alt="{{ photo.caption }}">
+    </div>
+    <div class="details-box">
+        <p><strong>Uploaded by:</strong> {{ photo.user.username }}</p> 
+        <p><strong>Description:</strong> {{ photo.description }}</p>
+
+        <h2>Comments</h2>
+        <ul class="comment-list">
+            {% for comment in photo.comments %} 
+                <li>
+                    <p><strong>{{ comment.user.username }}</strong> - {{ comment.created_at }}</p> 
+                    <p>{{ comment.content }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+
+        {% if current_user.is_authenticated %} 
+            <h3>Add a Comment</h3>
+            <form method="POST" action="{{ url_for('main.create_comment', photo_id=photo.id) }}">
+                <div class="input-container">
+                    <label for="comment">Your Comment:</label>
+                    <textarea id="comment" name="content" rows="4" cols="50" required></textarea>
+                </div>
+                <button type="submit" class="button green">Post Comment</button>
+            </form>
+        {% else %}
+            <p>Please <a href="{{ url_for('auth.login') }}">log in</a> to leave a comment.</p>
+        {% endif %}
+    </div> 
+</div> 
+
+{% endblock content %}
