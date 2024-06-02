@@ -30,13 +30,13 @@ def newPhoto():
         file.seek(0, os.SEEK_END)
         if file.tell() > 12 * 1024 * 1024:
             flash('File too large!', 'error')
-            return redirect(request.url)
+            return redirect(url_for('main.newPhoto'))
         file.seek(0)
 
         file_type = imghdr.what(file)
         if file_type not in ['jpeg', 'png', 'gif']:
             flash('Invalid image format!', 'error')
-            return redirect(request.url)
+            return redirect(url_for('main.newPhoto'))
 
         file.save(os.path.join(current_app.config["UPLOAD_DIR"], filename))
 
