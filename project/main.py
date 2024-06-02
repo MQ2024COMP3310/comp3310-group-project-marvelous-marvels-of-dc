@@ -34,18 +34,9 @@ def newPhoto():
         file.seek(0)
 
         file_type = imghdr.what(file)
-
         if file_type not in ['jpeg', 'png', 'gif']:
             flash('Invalid image format!', 'error')
             return redirect(request.url)
-        
-        if not file or not file.filename:
-            flash("No file selected!", "error")
-            return redirect(url_for('main.newPhoto'))  #Redirect to newPhotos route
-
-
-        filepath = os.path.join(current_app.config["UPLOAD_DIR"], filename) 
-        file.save(filepath)
 
         file.save(os.path.join(current_app.config["UPLOAD_DIR"], filename))
 
