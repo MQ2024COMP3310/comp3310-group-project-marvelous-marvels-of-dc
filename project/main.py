@@ -58,25 +58,29 @@ def newPhoto():
 @login_required
 def editPhoto(photo_id):
     photo = db.session.query(Photo).filter_by(id=photo_id).one()
-    if photo.user_id != current_user.id:
+    if photo.user_id != current_user.id and not current_user.is_admin:
         flash('You do not have permission to edit this photo.', 'error')
         return redirect(url_for('main.homepage'))
     
     form = EditForm(obj=photo)
     if form.validate_on_submit():
-        form.populate_obj(photo)
+        photo.name = request.form['user']
+        photo.caption = request.form['caption']
+        photo.description = request.form['description']
         db.session.commit()
         flash(f'Photo Successfully Edited {photo.name}', 'success')
         return redirect(url_for('main.homepage'))
     
     return render_template('edit.html', form=form, photo=photo)
 
-@main.route('/photo/<int:photo_id>/delete/', methods=['POST'])
+
+# This is called when clicking on Delete. 
+@main.route('/photo/<int:photo_id>/delete/', methods=['GET','POST'])
 @login_required
 def deletePhoto(photo_id):
     photo = Photo.query.get_or_404(photo_id)
 
-    if photo.user_id != current_user.id:
+    if photo.user_id != current_user.id and not current_user.is_admin:
         flash('You do not have permission to delete this photo', 'error')
         return redirect(url_for('main.homepage'))
 

@@ -4,24 +4,23 @@
 <div class="column is-4 is-offset-4">
     <h3 class="title">Register</h3>
     <div class="box">
-        <form method="POST" action="{{ url_for('auth.register') }}">
+        <form method="POST" action="{{ url_for('auth.register') }}" class="form-container">
             {{ form.hidden_tag() }}
-            <div class="field">
-                <div class="control">
-                    {{ form.username(class_='input is-large', placeholder='Username') }}
-                </div>
+            <div class="form-group">
+                {{ form.username.label(class_='form-label') }}
+                {{ form.username(class_='form-input', placeholder='Username') }}
             </div>
-            <div class="field">
-                <div class="control">
-                    {{ form.password(class_='input is-large', placeholder='Password') }}
-                </div>
+            <div class="form-group">
+                {{ form.password.label(class_='form-label') }}
+                {{ form.password(class_='form-input', placeholder='Password') }}
             </div>
-            <div class="field">
-                <div class="control">
-                    {{ form.confirm(class_='input is-large', placeholder='Repeat Password') }}
-                </div>
+            <div class="form-group">
+                {{ form.confirm.label(class_='form-label') }}
+                {{ form.confirm(class_='form-input', placeholder='Repeat Password') }}
             </div>
-            {{ form.submit(class_='button is-block is-info is-large is-fullwidth') }}
+            <div class="form-actions">
+                {{ form.submit(class_='btn btn-primary') }}
+            </div>
         </form>
     </div>
 </div>

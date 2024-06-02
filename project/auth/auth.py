@@ -6,7 +6,7 @@ from ..models import User
 from .. import db
 from ..forms import LoginForm, RegisterForm
 
-auth = Blueprint('auth', __name__)
+auth = Blueprint('auth', __name__, template_folder='templates')
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
@@ -27,7 +27,7 @@ def register():
         flash('Registration successful. You can now log in.', 'success')
         return redirect(url_for('auth.login'))
         
-    return render_template('register.html', form=form)
+    return render_template('auth/register.html', form=form)
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -45,7 +45,7 @@ def login():
             flash('Invalid username or password', 'error')
             return redirect(url_for('auth.login'))
         
-    return render_template('login.html', form=form)
+    return render_template('auth/login.html', form=form)
 
 @auth.route('/logout')
 @login_required
