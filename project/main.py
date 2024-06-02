@@ -4,7 +4,7 @@ from sqlalchemy import asc, text
 from werkzeug.utils import secure_filename
 import imghdr
 import os
-from .forms import UploadForm, EditForm
+from .forms import CommentForm, UploadForm, EditForm
 from .models import Photo, Comment
 from . import db
 
@@ -93,17 +93,20 @@ def deletePhoto(photo_id):
 @main.route('/photo/<int:photo_id>/comment', methods=['POST'])
 @login_required
 def create_comment(photo_id):
-    content = request.form.get('content')
-    if not content:
-        flash('Comment cannot be empty', 'error')
-    else:
-        new_comment = Comment(content=content, user_id=current_user.id, photo_id=photo_id)
+    form = CommentForm()
+    if form.validate_on_submit():
+        new_comment = Comment(content=form.content.data, user_id=current_user.id, photo_id=photo_id)
         db.session.add(new_comment)
         db.session.commit()
         flash('Comment posted successfully!', 'success')
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"Error in the {getattr(form, field).label.text} field - {error}", 'error')
     return redirect(url_for('main.view_photo', photo_id=photo_id))
 
 @main.route('/photo/<int:photo_id>')
 def view_photo(photo_id):
     photo = Photo.query.get_or_404(photo_id)
-    return render_template('photo.html', photo=photo)
+    form = CommentForm()
+    return render_template('photo.html', photo=photo, form=form)

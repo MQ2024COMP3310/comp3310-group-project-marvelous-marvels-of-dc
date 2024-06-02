@@ -29,3 +29,7 @@ class RegisterForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(), EqualTo('confirm', message='Passwords must match')])
     confirm = PasswordField('Repeat Password')
     submit = SubmitField('Register')
+
+class CommentForm(FlaskForm):
+    content = TextAreaField('Your Comment', validators=[DataRequired()])
+    submit = SubmitField('Post Comment')
